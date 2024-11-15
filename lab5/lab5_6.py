@@ -3,48 +3,33 @@ import numpy as np
 import random
 
 def add_noise(img):
-    # Getting the dimensions of the image
-    row, col, _channels = map(int, img.shape)
+    row, col, *channels = img.shape
+    num_pixels = random.randint(300, 10000)
 
-    # Randomly pick some pixels in the
-    # image for coloring them white
-    # Pick a random number between 300 and 10000
-    number_of_pixels = random.randint(300, 10000)
-    for i in range(number_of_pixels):
-        # Pick a random y coordinate
-        y_coord = random.randint(0, row - 1)
+    for i in range(num_pixels):
+        x = random.randint(0, col - 1)
+        y = random.randint(0, row - 1)
+        img[y, x] = 255
 
-        # Pick a random x coordinate
-        x_coord = random.randint(0, col - 1)
-
-        # Color that pixel to white
-        img[y_coord][x_coord] = 255
-
-    # Randomly pick some pixels in
-    # the image for coloring them black
-    # Pick a random number between 300 and 10000
-    number_of_pixels = random.randint(300, 10000)
-    for i in range(number_of_pixels):
-        # Pick a random y coordinate
-        y_coord = random.randint(0, row - 1)
-
-        # Pick a random x coordinate
-        x_coord = random.randint(0, col - 1)
-
-        # Color that pixel to black
-        img[y_coord][x_coord] = 0
+    num_pixels = random.randint(300, 10000)
+    for i in range(num_pixels):
+        x = random.randint(0, col - 1)
+        y = random.randint(0, row - 1)
+        img[y, x] = 0
 
     return img
 
 img = cv2.imread("gang.jpg")
-img = cv2.resize(img, (300,300))
+img = cv2.resize(img, (300, 300))
 
-img_salt_and_paper = img
-img_salt_and_paper = add_noise(img_salt_and_paper)
-combine = np.hstack((img ,img_salt_and_paper))
+noisy_img = add_noise(img.copy())
 
-cv2.imshow("Obrazy z filtrem median", combine)
+gaussian_blur = cv2.GaussianBlur(noisy_img, (3, 3), 0)
+median_blur = cv2.medianBlur(noisy_img, 3)
+bilateral_blur = cv2.bilateralFilter(noisy_img, 15, 95, 95)
+
+combine = np.hstack((noisy_img,gaussian_blur,median_blur,bilateral_blur))
+cv2.imshow("obrazy", combine)
 
 cv2.waitKey(0)
-
 cv2.destroyAllWindows()
