@@ -1,10 +1,14 @@
 import cv2
 import numpy as np
 
+
 def custom_filter(src, ddepth, iteration_amount):
     for ind in range(iteration_amount):
+        # Rozmiar jądra zmienia się dynamicznie: 3, 5, 7, 9, 11 (cyklicznie)
         kernel_size = 3 + 2 * (ind % 5)
+        # Tworzenie jądra: macierz o wymiarach kernel_size x kernel_size z równymi wartościami
         kernel = np.ones((kernel_size, kernel_size), dtype=np.float32) / (kernel_size * kernel_size)
+        # Zastosowanie filtra 2D na obrazie źródłowym
         src = cv2.filter2D(src, ddepth, kernel)
     return src
 
